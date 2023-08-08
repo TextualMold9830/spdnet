@@ -203,11 +203,11 @@ public class Dungeon {
 	public static long seed;
 	
 	public static void init() {
+		seed = ShatteredPixelDungeon.net.seed();
 
 		initialVersion = version = Game.versionCode;
 		challenges = SPDSettings.challenges();
 		mobsToChampion = -1;
-
 		if (daily) {
 			//Ensures that daily seeds are not in the range of user-enterable seeds
 			seed = SPDSettings.lastDaily() + DungeonSeed.TOTAL_SEEDS;

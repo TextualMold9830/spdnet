@@ -51,7 +51,7 @@ public class Game implements ApplicationListener {
 	//actual size of the display
 	public static int dispWidth;
 	public static int dispHeight;
-	
+	public static String pkgName = "???";
 	// Size of the EGL surface view
 	public static int width;
 	public static int height;

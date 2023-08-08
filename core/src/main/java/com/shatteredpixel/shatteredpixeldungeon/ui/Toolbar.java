@@ -1,24 +1,3 @@
-/*
- * Pixel Dungeon
- * Copyright (C) 2012-2015 Oleg Dolya
- *
- * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>
- */
-
 package com.shatteredpixel.shatteredpixeldungeon.ui;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
@@ -26,6 +5,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.QuickSlot;
 import com.shatteredpixel.shatteredpixeldungeon.SPDAction;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
+import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.HoldFast;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LostInventory;
@@ -40,10 +20,12 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTerrainTilemap;
+import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndKeyBindings;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndMessage;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndQuickBag;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndTextInput;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndUseItem;
 import com.watabou.input.ControllerHandler;
 import com.watabou.input.GameAction;
@@ -64,13 +46,15 @@ public class Toolbar extends Component {
 	private Tool btnWait;
 	private Tool btnSearch;
 	private Tool btnInventory;
+	private Tool btnChat;
 	private QuickslotTool[] btnQuick;
 	private SlotSwapTool btnSwap;
-	
+
 	private PickedUpItem pickedUp;
-	
+
 	private boolean lastEnabled = true;
 	public boolean examining = false;
+
 
 	private static Toolbar instance;
 
@@ -79,7 +63,7 @@ public class Toolbar extends Component {
 		GROUP,
 		CENTER
 	}
-	
+
 	public Toolbar() {
 		super();
 
@@ -195,7 +179,7 @@ public class Toolbar extends Component {
 				else				return null;
 			}
 		});
-		
+
 		add(btnWait = new Tool(24, 0, 20, 26) {
 			@Override
 			protected void onClick() {
@@ -204,7 +188,7 @@ public class Toolbar extends Component {
 					Dungeon.hero.rest(false);
 				}
 			}
-			
+
 			@Override
 			public GameAction keyAction() {
 				return SPDAction.WAIT;
@@ -254,7 +238,7 @@ public class Toolbar extends Component {
 				if (Dungeon.hero.ready && !GameScene.cancel()) {
 					Dungeon.hero.waitOrPickup = true;
 					if ((Dungeon.level.heaps.get(Dungeon.hero.pos) != null || Dungeon.hero.canSelfTrample())
-						&& Dungeon.hero.handle(Dungeon.hero.pos)){
+							&& Dungeon.hero.handle(Dungeon.hero.pos)){
 						//trigger hold fast and patient strike here, even if the hero didn't specifically wait
 						if (Dungeon.hero.hasTalent(Talent.HOLD_FAST)){
 							Buff.affect(Dungeon.hero, HoldFast.class).pos = Dungeon.hero.pos;
@@ -284,7 +268,7 @@ public class Toolbar extends Component {
 				else				return null;
 			}
 		});
-		
+
 		add(btnSearch = new Tool(44, 0, 20, 26) {
 			@Override
 			protected void onClick() {
@@ -298,7 +282,7 @@ public class Toolbar extends Component {
 					}
 				}
 			}
-			
+
 			@Override
 			public GameAction keyAction() {
 				return SPDAction.EXAMINE;
@@ -308,7 +292,7 @@ public class Toolbar extends Component {
 			protected String hoverText() {
 				return Messages.titleCase(Messages.get(WndKeyBindings.class, "examine"));
 			}
-			
+
 			@Override
 			protected boolean onLongClick() {
 				Dungeon.hero.search(true);
@@ -316,7 +300,7 @@ public class Toolbar extends Component {
 			}
 		});
 		btnSearch.icon( 192, 0, 16, 16 );
-		
+
 		add(btnInventory = new Tool(0, 0, 24, 26) {
 			private CurrencyIndicator ind;
 
@@ -334,7 +318,7 @@ public class Toolbar extends Component {
 					}
 				}
 			}
-			
+
 			@Override
 			public GameAction keyAction() {
 				return SPDAction.INVENTORY;
@@ -349,7 +333,7 @@ public class Toolbar extends Component {
 			protected String hoverText() {
 				return Messages.titleCase(Messages.get(WndKeyBindings.class, "inventory"));
 			}
-			
+
 			@Override
 			protected boolean onLongClick() {
 				GameScene.show(new WndQuickBag(null));
@@ -482,7 +466,7 @@ public class Toolbar extends Component {
 
 		add(pickedUp = new PickedUpItem());
 	}
-	
+
 	@Override
 	protected void layout() {
 
@@ -541,7 +525,7 @@ public class Toolbar extends Component {
 
 		for(int i = startingSlot; i <= endingSlot; i++) {
 			if (i == startingSlot && !SPDSettings.flipToolbar() ||
-				i == endingSlot && SPDSettings.flipToolbar()){
+					i == endingSlot && SPDSettings.flipToolbar()){
 				btnQuick[i].border(0, 2);
 				btnQuick[i].frame(106, 0, 19, 24);
 			} else if (i == startingSlot && SPDSettings.flipToolbar() ||
@@ -601,7 +585,7 @@ public class Toolbar extends Component {
 					btnSwap.setPos(btnQuick[endingSlot].left() - (btnSwap.width()-2), y+3);
 					shift = -btnSwap.left();
 				}
-				
+
 				break;
 		}
 
@@ -638,21 +622,21 @@ public class Toolbar extends Component {
 	public static void updateLayout(){
 		if (instance != null) instance.layout();
 	}
-	
+
 	@Override
 	public void update() {
 		super.update();
-		
+
 		if (lastEnabled != (Dungeon.hero.ready && Dungeon.hero.isAlive())) {
 			lastEnabled = (Dungeon.hero.ready && Dungeon.hero.isAlive());
-			
+
 			for (Gizmo tool : members.toArray(new Gizmo[0])) {
 				if (tool instanceof Tool) {
 					((Tool)tool).enable( lastEnabled );
 				}
 			}
 		}
-		
+
 		if (!Dungeon.hero.isAlive()) {
 			btnInventory.enable(true);
 		}
@@ -670,11 +654,11 @@ public class Toolbar extends Component {
 
 	public void pickup( Item item, int cell ) {
 		pickedUp.reset( item,
-			cell,
-			btnInventory.centerX(),
-			btnInventory.centerY());
+				cell,
+				btnInventory.centerX(),
+				btnInventory.centerY());
 	}
-	
+
 	private static CellSelector.Listener informer = new CellSelector.Listener() {
 		@Override
 		public void onSelect( Integer cell ) {
@@ -688,14 +672,14 @@ public class Toolbar extends Component {
 			return Messages.get(Toolbar.class, "examine_prompt");
 		}
 	};
-	
-	private static class Tool extends Button {
-		
+
+	private class Tool extends Button {
+
 		private static final int BGCOLOR = 0x7B8073;
-		
+
 		private Image base;
 		private Image icon;
-		
+
 		public Tool( int x, int y, int width, int height ) {
 			super();
 
@@ -716,19 +700,36 @@ public class Toolbar extends Component {
 
 			icon.frame( x, y, width, height);
 		}
-		
+
 		@Override
 		protected void createChildren() {
 			super.createChildren();
-			
-			base = new Image( Assets.Interfaces.TOOLBAR );
-			add( base );
+
+			base = new Image(Assets.Interfaces.TOOLBAR);
+			add(base);
+			add(btnChat = new Tool(128, 0, 20, 26) {
+				@Override
+				protected void onClick() {
+					examining = false;
+					new WndTextInput("Chat"," "," ",256,false,"Send","Cancel"){
+						@Override
+						public void onSelect(boolean positive, String text){
+							if(positive && text.trim().length()!=0){
+								ShatteredPixelDungeon.net().sender().sendChat(text);
+								GLog.i("You: "+text);
+							}
+						}
+
+					};
+
+				}
+			});
 		}
-		
+
 		@Override
 		protected void layout() {
 			super.layout();
-			
+
 			base.x = x;
 			base.y = y;
 
@@ -747,7 +748,7 @@ public class Toolbar extends Component {
 		protected void onPointerDown() {
 			base.brightness( 1.4f );
 		}
-		
+
 		@Override
 		protected void onPointerUp() {
 			if (active) {
@@ -756,7 +757,7 @@ public class Toolbar extends Component {
 				base.tint( BGCOLOR, 0.7f );
 			}
 		}
-		
+
 		public void enable( boolean value ) {
 			if (value != active) {
 				if (icon != null) icon.alpha( value ? 1f : 0.4f);
@@ -764,13 +765,13 @@ public class Toolbar extends Component {
 			}
 		}
 	}
-	
-	private static class QuickslotTool extends Tool {
-		
+
+	private class QuickslotTool extends Tool {
+
 		private QuickSlotButton slot;
 		private int borderLeft = 2;
 		private int borderRight = 2;
-		
+
 		public QuickslotTool( int x, int y, int width, int height, int slotNum ) {
 			super( x, y, width, height );
 
@@ -783,7 +784,7 @@ public class Toolbar extends Component {
 			borderRight = right;
 			layout();
 		}
-		
+
 		@Override
 		protected void layout() {
 			super.layout();
@@ -807,7 +808,7 @@ public class Toolbar extends Component {
 	public static boolean swappedQuickslots = false;
 	public static SlotSwapTool SWAP_INSTANCE;
 
-	public static class SlotSwapTool extends Tool {
+	public  class SlotSwapTool extends Tool {
 
 		private Image[] icons = new Image[4];
 		private Item[] items = new Item[4];
@@ -919,63 +920,63 @@ public class Toolbar extends Component {
 		//private
 
 	}
-	
+
 	public static class PickedUpItem extends ItemSprite {
-		
+
 		private static final float DURATION = 0.5f;
-		
+
 		private float startScale;
 		private float startX, startY;
 		private float endX, endY;
 		private float left;
-		
+
 		public PickedUpItem() {
 			super();
-			
+
 			originToCenter();
-			
+
 			active =
-			visible =
-				false;
+					visible =
+							false;
 		}
-		
+
 		public void reset( Item item, int cell, float endX, float endY ) {
 			view( item );
-			
+
 			active =
-			visible =
-				true;
-			
+					visible =
+							true;
+
 			PointF tile = DungeonTerrainTilemap.raisedTileCenterToWorld(cell);
 			Point screen = Camera.main.cameraToScreen(tile.x, tile.y);
 			PointF start = camera().screenToCamera(screen.x, screen.y);
-			
+
 			x = this.startX = start.x - width() / 2;
 			y = this.startY = start.y - width() / 2;
-			
+
 			this.endX = endX - width() / 2;
 			this.endY = endY - width() / 2;
 			left = DURATION;
-			
+
 			scale.set( startScale = Camera.main.zoom / camera().zoom );
-			
+
 		}
-		
+
 		@Override
 		public void update() {
 			super.update();
-			
+
 			if ((left -= Game.elapsed) <= 0) {
-				
+
 				visible =
-				active =
-					false;
+						active =
+								false;
 				if (emitter != null) emitter.on = false;
-				
+
 			} else {
 				float p = left / DURATION;
 				scale.set( startScale * (float)Math.sqrt( p ) );
-				
+
 				x = startX*p + endX*(1-p);
 				y = startY*p + endY*(1-p);
 			}

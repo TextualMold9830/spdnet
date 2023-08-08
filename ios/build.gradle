@@ -1,3 +1,4 @@
+
 buildscript {
     repositories {
         mavenCentral()
@@ -18,7 +19,7 @@ task updateRoboVMProps(){
     
     props.setProperty ('appName', appName)
     //append .apple because com.shatteredpixel.shatteredpixeldungeon was taken =(
-    props.setProperty ('appPackageName', appPackageName + ".apple")
+    props.setProperty ('appPackageName', "com.untitledshatteredpixel.untitledshatteredpixeldungeon")
 
     props.setProperty ('appVersionCode', appVersionCode.toString())
     props.setProperty ('appVersionName', appVersionName)

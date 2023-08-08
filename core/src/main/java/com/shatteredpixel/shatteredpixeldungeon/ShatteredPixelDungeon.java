@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon;
 
+import com.shatteredpixel.shatteredpixeldungeon.net.Net;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.TitleScene;
@@ -62,8 +63,9 @@ public class ShatteredPixelDungeon extends Game {
 		com.watabou.utils.Bundle.addAlias(
 				com.shatteredpixel.shatteredpixeldungeon.items.weapon.curses.Explosive.class,
 				"com.shatteredpixel.shatteredpixeldungeon.items.weapon.curses.Fragile" );
+		net = new Net();
 	}
-	
+	public static Net net;
 	@Override
 	public void create() {
 		super.create();
@@ -150,5 +152,8 @@ public class ShatteredPixelDungeon extends Game {
 
 	public static void updateSystemUI() {
 		platform.updateSystemUI();
+	}
+	public static Net net(){
+		return ((ShatteredPixelDungeon)instance).net;
 	}
 }

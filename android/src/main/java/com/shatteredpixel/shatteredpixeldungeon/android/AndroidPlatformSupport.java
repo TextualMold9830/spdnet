@@ -46,7 +46,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class AndroidPlatformSupport extends PlatformSupport {
-	
+
 	public void updateDisplaySize(){
 		if (SPDSettings.landscape() != null) {
 			AndroidLauncher.instance.setRequestedOrientation( SPDSettings.landscape() ?
@@ -315,5 +315,6 @@ public class AndroidPlatformSupport extends PlatformSupport {
 			return regularsplitter.split(text);
 		}
 	}
-	
-}
+
+	}
+

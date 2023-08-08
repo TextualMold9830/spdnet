@@ -145,4 +145,5 @@ public class DesktopPlatformSupport extends PlatformSupport {
 			return regularsplitter.split(text);
 		}
 	}
+
 }

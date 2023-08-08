@@ -31,7 +31,6 @@ import com.watabou.noosa.Game;
 import java.util.HashMap;
 
 public abstract class PlatformSupport {
-	
 	public abstract void updateDisplaySize();
 	
 	public abstract void updateSystemUI();
@@ -152,6 +151,9 @@ public abstract class PlatformSupport {
 		}
 
 		return fonts.get(generator).get(key);
+	}
+	public static abstract class TextCallback {
+		public abstract void onSelect( boolean positive, String text );
 	}
 
 }
